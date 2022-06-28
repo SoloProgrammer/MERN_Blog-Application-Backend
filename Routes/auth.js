@@ -1,15 +1,12 @@
 const express = require('express');
 const User = require('../models/User');
 const router = express.Router();
-const { body, validationResult} = require('express-validator');
+const { body, validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 
 let fetchuser = require('../middleware/fetchuser')
 
 const jwt = require('jsonwebtoken');
-
-
-const JWT_SECRET = "@iamapro$coder"
 
 //...........................................................ROUTE 1 FOR CREATING A USER
 
@@ -24,7 +21,7 @@ router.post('/createuser', [
     let success = false
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(400).json({success, errors: errors.array() });
+        return res.status(400).json({ success, errors: errors.array() });
     }
 
     try {
@@ -41,19 +38,18 @@ router.post('/createuser', [
             password: Secpass,
             email: req.body.email
         })
-        // user = User(req.body);
-        // user.save()
+
         const data = {
             user: {
                 id: user.id
             }
         }
-        const authToken = jwt.sign(data, JWT_SECRET)
+        const authToken = jwt.sign(data, process.env.jwt_secretT)
         success = true
-        res.json({ success ,authToken})
+        res.json({ success, authToken })
     }
     catch (error) {
-        // console.error(error.message)
+
         res.status(500).send("Internal server error")
     }
 
@@ -70,7 +66,7 @@ router.post('/authenticate_user', [
     body('password', 'Password cannot be blank').exists()
 
 ], async (req, res) => {
-    
+
     const errors = validationResult(req);
 
     let success = false
@@ -78,37 +74,30 @@ router.post('/authenticate_user', [
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() });
     }
-    // console.log(errors)
 
     const { email, password } = req.body;
 
-   
 
-    if(email === "Admin23@gmail.com" && password === "pass99scam"){
-            // console.log(email)
 
-            const users_ = await User.find({});
-            
-            res.json({Admin:email,users:users_})
+    if (email === "Admin23@gmail.com" && password === "pass99scam") {
+
+        const users_ = await User.find({});
+
+        res.json({ Admin: email, users: users_ })
     }
-    else{
+    else {
         try {
             let user = await User.findOne({ email })  //......... model .findone return s a promise
-            // console.log(user._id)
             if (!user) {
-                return res.status(400).json({success, errormsg: "Invalid  Credentials !!" })
+                return res.status(400).json({ success, errormsg: "Invalid  Credentials !!" })
             }
 
             const pass = user.password //......... model .findone return s a promise
-            // console.log(pass)
-            // console.log(password)
 
             const passwordCompare = await bcrypt.compare(password, pass)
 
-            // console.log(passwordCompare)
-
             if (!passwordCompare) {
-                return res.status(400).json({ success,errormsg: "Invalid Credentials !!" })
+                return res.status(400).json({ success, errormsg: "Invalid Credentials !!" })
             }
 
             const payload = {          //// Data whiich is to be store while creating authtoken in that authtoken
@@ -116,16 +105,14 @@ router.post('/authenticate_user', [
                     id: user.id
                 }
             }
-            const authToken = jwt.sign(payload, JWT_SECRET)
+            const authToken = jwt.sign(payload, process.env.jwt_secret)
             success = true
-            res.json({ authToken:authToken,success})
-            // cookie.
+            res.json({ authToken: authToken, success })
 
         } catch (error) {
-            // console.error(error.message)
             res.status(500).send("Internal server error")
         }
-            
+
     }
 
 
@@ -137,19 +124,15 @@ router.post('/authenticate_user', [
 
 // get logged in User details  using: POST "api/auth/getuser" Doesnt require Auth and login required
 
-router.post('/getuser',fetchuser, async (req, res) => {
+router.post('/getuser', fetchuser, async (req, res) => {
     try {
         let Userid = req.user.id
-        if(!Userid){
-            return res.status(401).json({"status":false,"msg":"Token has been changed"})   
+        if (!Userid) {
+            return res.status(401).json({ "status": false, "msg": "Token has been changed" })
         }
         const user = await User.findById(Userid).select("-password")
         res.send(user)
-        // console.log()
-        // res.json(user)
-      
     } catch (error) {
-        // console.log(error)
         res.status(500).send("Internal Server Error")
     }
 })

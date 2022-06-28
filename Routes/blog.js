@@ -200,15 +200,18 @@ router.get('/blogs_by_category/:category',async(req,res)=>{
 
 router.get('/blog_by_id/:id',async (req,res)=>{
 
-    // console.log(blogid)
     try {
         const blogid = req.params.id;
         const blog_by_id = await Blog.findById(blogid);
+
+        if(!blog_by_id){
+            return res.status(400).json({status:false})
+        }
     
         res.json({status:"success",blog_by_id})
         
     } catch (error) {
-        res.status(400).json({error:error.message})
+        res.status(400).json({status:false,error:error.message})
     }
 })
 
