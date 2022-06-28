@@ -77,7 +77,7 @@ router.put('/Addcomments/:id',fetchuser,async(req,res)=>{
 
     const comm_id = Math.random() * 10; 
 
-    const comm_blog = await Blog.findByIdAndUpdate(req.params.id,{$push:{Comments:{name:user.name1,comment,comm_id,Clikearr:[],Cdislikearr:[]}}})
+    const comm_blog = await Blog.findByIdAndUpdate(req.params.id,{$push:{Comments:{name:user.name1,comment,comm_id,Clikearr:[],Cdislikearr:[],Replyarr:[]}}})
     
     const blog = await Blog.findById(req.params.id);
 
