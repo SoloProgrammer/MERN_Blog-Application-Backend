@@ -29,6 +29,8 @@ const BlogSchema = new Schema({
     Comments:[Object],
     Blikearr:[mongoose.Schema.Types.ObjectId],
     Bdislikearr:[mongoose.Schema.Types.ObjectId],
+},{
+    timestamps: true
 });
 
 const Blog = mongoose.model('Blogs',BlogSchema )
