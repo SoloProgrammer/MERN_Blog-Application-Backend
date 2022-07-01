@@ -247,10 +247,6 @@ router.put('/delete_reply/:id', async (req, res) => {
 
         const deleted_reply = await Blog.updateOne({ "_id": req.params.id, "Comments.comm_id":comm_id}, { $pull:{"Comments.$.Replyarr" : {rep_id} } })
 
-        // const updated_blog = await Blog.findById(req.params.id);
-
-        // res.json(updated_blog);
-
         res.json(deleted_reply)
 
     } catch (error) {
