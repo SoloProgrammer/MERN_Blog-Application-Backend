@@ -1,0 +1,6 @@
+.env
+/node_modules
+.txt
+/Frontend
+safe_code.txt
+/uploads
